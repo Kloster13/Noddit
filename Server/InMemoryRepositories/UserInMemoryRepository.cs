@@ -3,11 +3,11 @@ using RepositoryContracts;
 
 namespace InMemoryRepositories;
 
-public class UserRepository : IUserRepository
+public class UserInMemoryRepository : IUserRepository
 {
     private List<User> users = [];
 
-    public UserRepository()
+    public UserInMemoryRepository()
     {
         CreateAndAddDummyData();
     }

@@ -3,11 +3,11 @@ using RepositoryContracts;
 
 namespace InMemoryRepositories;
 
-public class PostRepository : IPostRepository
+public class PostInMemoryRepository : IPostRepository
 {
     private List<Post> posts = [];
 
-    public PostRepository()
+    public PostInMemoryRepository()
     {
         CreateAndAddDummyData();
     }

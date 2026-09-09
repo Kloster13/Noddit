@@ -3,11 +3,11 @@ using RepositoryContracts;
 
 namespace InMemoryRepositories;
 
-public class CommentRepository : ICommentRepository
+public class CommentInMemoryRepository : ICommentRepository
 {
     private List<Comment> comments = [];
 
-    public CommentRepository()
+    public CommentInMemoryRepository()
     {
         CreateAndAddDummyData();
     }

@@ -3,11 +3,11 @@ using RepositoryContracts;
 
 namespace InMemoryRepositories;
 
-public class VoteRepository : IVoteRepository
+public class VoteInMemoryRepository : IVoteRepository
 {
     private List<Vote> votes = [];
 
-    public VoteRepository()
+    public VoteInMemoryRepository()
     {
         CreateAndAddDummyData();
     }

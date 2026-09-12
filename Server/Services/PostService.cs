@@ -11,7 +11,8 @@ public class PostService
     private readonly IUserRepository userRepo;
     private readonly IVoteRepository voteRepo;
 
-    public PostService(ICommentRepository commentRepo, IPostRepository postRepo, IUserRepository userRepo,
+    public PostService(ICommentRepository commentRepo, IPostRepository postRepo,
+        IUserRepository userRepo,
         IVoteRepository voteRepo)
     {
         this.postRepo = postRepo;
@@ -20,14 +21,16 @@ public class PostService
         this.commentRepo = commentRepo;
     }
 
-    public List<PostDto> GetAllPosts() //TODO maybe add some form of filter to use same with users profile
+    public List<PostDto>
+        GetAllPosts() //TODO maybe add some form of filter to use same with users profile
     {
         var posts = postRepo.GetManyAsync();
         var resultList = new List<PostDto>();
         foreach (var post in posts)
         {
-            var votes = CountVotes(post);
-            var postDto = new PostDto(post.Id, post.UserId, post.Title, post.Body, post.CreatedAt, votes);
+            var votes = CountPostVotes(post);
+            var postDto = new PostDto(post.Id, post.UserId, post.Title,
+                post.Body, post.CreatedAt, votes);
             resultList.Add(postDto);
         }
 
@@ -39,7 +42,8 @@ public class PostService
         return await postRepo.GetSingleAsync(postId);
     }
 
-    public async Task<PostDto> CreatePost(string? title, string? body, int userId)
+    public async Task<PostDto> CreatePost(string? title, string? body,
+        int userId)
     {
         if (title is null or "")
             throw new Exception("No title");
@@ -55,15 +59,26 @@ public class PostService
         };
         var addedPost = await postRepo.AddAsync(post);
         Vote(userId, 1, addedPost.Id, null);
-        var postDto = new PostDto(post.Id, addedPost.UserId, addedPost.Title, addedPost.Body,
+        var postDto = new PostDto(post.Id, addedPost.UserId, addedPost.Title,
+            addedPost.Body,
             addedPost.CreatedAt, 1);
         return postDto;
     }
 
-    private void Vote(int userId, int score, int? postId, int? commentId)
+    public async Task<List<CommentDto>> GetAllComments(int postId)
     {
-        if ((postId is null) == (commentId is null))
-            throw new ArgumentException("Exactly one of PostId or CommentId must be set");
+        var comments =
+            commentRepo.GetManyAsync().Where(c => c.PostId == postId).ToList();
+        return comments.Select(c =>
+            new CommentDto(c.Id, c.Text, CountCommentVotes(c),
+                GetCreatedBy(c.UserId))).ToList();
+    }
+
+    public async Task Vote(int userId, int score, int? postId, int? commentId)
+    {
+        if (postId is null == commentId is null)
+            throw new ArgumentException(
+                "Exactly one of PostId or CommentId must be set");
         var vote = new Vote
         {
             UserId = userId,
@@ -72,11 +87,23 @@ public class PostService
             Score = score,
             CreatedAt = DateTime.Now
         };
-        voteRepo.AddAsync(vote);
+        await voteRepo.AddAsync(vote);
     }
 
-    private int CountVotes(Post post)
+    private string GetCreatedBy(int userId)
     {
-        return voteRepo.GetManyAsync().Where(v => v.PostId == post.Id).Sum(v => v.Score);
+        return userRepo.GetSingleAsync(userId).Result.Username;
+    }
+
+    private int CountPostVotes(Post post)
+    {
+        return voteRepo.GetManyAsync().Where(v => v.PostId == post.Id)
+            .Sum(v => v.Score);
+    }
+
+    private int CountCommentVotes(Comment comment)
+    {
+        return voteRepo.GetManyAsync().Where(c => c.CommentId == comment.Id)
+            .Sum(c => c.Score);
     }
 }

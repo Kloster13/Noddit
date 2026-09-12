@@ -12,5 +12,5 @@ IVoteRepository voteRepository = new VoteInMemoryRepository();
 var postService = new PostService(commentRepository, postRepository, userRepository, voteRepository);
 var userService = new UserService(userRepository,voteRepository,postRepository,commentRepository);
 
-var cliApp = new CliApp(postService, userService);
+var cliApp = new CliApp(userService, postService);
 await cliApp.StartAsync();

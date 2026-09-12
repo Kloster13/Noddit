@@ -1,13 +1,18 @@
-﻿using Entities;
+﻿using CLI.UI.ManageUsers;
+using Entities;
 using Services;
 
 namespace CLI.UI.ManagePosts;
 
-public class ManagePostsView(PostService postService, UserService userService)
+public class ManagePostsView(
+    CliApp cliApp,
+    PostService postService,
+    UserService userService)
 {
     public async Task MainView()
     {
-        while (true)
+        var runApp = true;
+        while (runApp && cliApp.Running)
         {
             ViewPostOverview();
             var input = Console.ReadLine();
@@ -15,7 +20,7 @@ public class ManagePostsView(PostService postService, UserService userService)
             {
                 try
                 {
-                    ViewSpecificPost(result);
+                    await ViewSpecificPost(result);
                     break;
                 }
                 catch (Exception e)
@@ -27,14 +32,18 @@ public class ManagePostsView(PostService postService, UserService userService)
             {
                 switch (input?.ToLower())
                 {
-                    case null:
-                        Console.WriteLine("Please enter valid input you moron");
-                        break;
                     case "post":
                         await CreatePostView();
                         break;
                     case "user":
-                        await CreateNewUserView();
+                        await GoToUserView();
+                        break;
+                    case "close":
+                        cliApp.Close();
+                        runApp = false;
+                        break;
+                    default:
+                        Console.WriteLine("Invalid input");
                         break;
                 }
             }
@@ -47,12 +56,14 @@ public class ManagePostsView(PostService postService, UserService userService)
         foreach (var post in posts)
         {
             Console.WriteLine("-------------------------------------------");
-            Console.WriteLine($"{post.Id} - {post.Title}  - votes: {post.Votes}");
+            Console.WriteLine(
+                $"{post.Id} - {post.Title}  - votes: {post.Votes}");
         }
 
         Console.WriteLine("-------------------------------------------");
-        Console.WriteLine("Enter posts id to see fill post");
-        Console.WriteLine("Other options: Create post (post) | create new user (user) ");
+        Console.WriteLine("Enter posts id to see full post");
+        Console.WriteLine(
+            "Other options: Create post (post) | Go to User management (user), Close app (close)");
     }
 
     private async Task CreatePostView()
@@ -66,7 +77,8 @@ public class ManagePostsView(PostService postService, UserService userService)
             var textInput = Console.ReadLine();
             try
             {
-                var post = await postService.CreatePost(titleInput, textInput, 1);
+                var post =
+                    await postService.CreatePost(titleInput, textInput, 1);
                 Console.WriteLine($"New post created with title: {post.Title}");
                 break;
             }
@@ -75,36 +87,18 @@ public class ManagePostsView(PostService postService, UserService userService)
                 Console.WriteLine(e.Message);
             }
         }
-        await MainView();
+
+        await cliApp.SwitchToPostView();
     }
 
-    private async Task CreateNewUserView()
+    private async Task GoToUserView()
     {
-        while (true)
-        {
-            Console.WriteLine("------------Create new user ------------");
-            Console.WriteLine("Enter Username");
-            var inputUsername = Console.ReadLine();
-            Console.WriteLine("Enter Password");
-            var inputPassword = Console.ReadLine();
-            try
-            {
-                var createdUser = await userService.CreateNewUser(inputUsername,inputPassword);
-                Console.WriteLine($"User: {createdUser.Username} was created");
-                break;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
+        await cliApp.SwitchToUserView();
     }
 
-    private void ViewSpecificPost(int postId)
+    private async Task ViewSpecificPost(int postId)
     {
-        var post = postService.GetSinglePost(postId).Result;
-        Console.WriteLine(post.Title);
-        Console.WriteLine(post.Body);
-        Console.WriteLine(post.CreatedAt);
+        var singlePostView = new SinglePostView(this, postService, postId);
+        await singlePostView.ShowSinglePostView();
     }
 }

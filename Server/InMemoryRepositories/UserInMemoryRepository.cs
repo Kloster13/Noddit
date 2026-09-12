@@ -71,6 +71,19 @@ public class UserInMemoryRepository : IUserRepository
             Username = "DummyUser",
             Password = "DummyPassword"
         };
-        users.Add(dummyUser);
+        User dummyUser2 = new()
+        {
+            Username = "DummyUser2",
+            Password = "DummyPassword2"
+        };
+        User dummyUser3 = new()
+        {
+            Username = "DummyUser3",
+            Password = "DummyPassword3"
+        };
+        AddAsync(dummyUser);
+        AddAsync(dummyUser2);
+        AddAsync(dummyUser3);
+        
     }
 }

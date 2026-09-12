@@ -1,6 +1,7 @@
 ## .NET build artifacts
 bin/
 obj/
+.idea/
 
 ## Rider / VS
 .idea/

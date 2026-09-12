@@ -1,20 +1,16 @@
-﻿using RepositoryContracts;
+﻿using CLI.UI.ManagePosts;
+using RepositoryContracts;
+using Services;
 
 namespace CLI.UI;
 
 public class CliApp(
-    IUserRepository userRepository,
-    ICommentRepository commentRepository,
-    IVoteRepository voteRepository,
-    IPostRepository postRepository)
+    PostService postService, UserService userService)
 {
-    private IUserRepository userRepository = userRepository;
-    private ICommentRepository commentRepository = commentRepository;
-    private IVoteRepository voteRepository = voteRepository;
-    private IPostRepository postRepository = postRepository;
-
     public async Task StartAsync()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("Welcome to Noddit");
+        var postsView = new ManagePostsView(postService,userService);
+        await postsView.MainView();
     }
 }

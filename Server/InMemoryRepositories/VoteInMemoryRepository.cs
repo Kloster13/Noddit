@@ -73,6 +73,22 @@ public class VoteInMemoryRepository : IVoteRepository
             Score = 1,
             CreatedAt = DateTime.UtcNow
         };
-        votes.Add(dummyVote);
+        Vote dummyVote2 = new()
+        {
+            UserId = 2,
+            PostId = 1,
+            Score = 1,
+            CreatedAt = DateTime.UtcNow
+        };
+        Vote dummyVote3 = new()
+        {
+            UserId = 3,
+            PostId = 1,
+            Score = 1,
+            CreatedAt = DateTime.UtcNow
+        };
+        AddAsync(dummyVote);
+        AddAsync(dummyVote2);
+        AddAsync(dummyVote3);
     }
 }

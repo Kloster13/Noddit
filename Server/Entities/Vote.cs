@@ -6,6 +6,6 @@ public class Vote
     public int UserId { get; set; }
     public int? PostId { get; set; }
     public int? CommentId { get; set; }
-    public int Score { get; set; } 
+    public required int Score { get; set; } 
     public DateTime CreatedAt { get; set; }
 }

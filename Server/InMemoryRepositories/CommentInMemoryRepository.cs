@@ -70,9 +70,25 @@ public class CommentInMemoryRepository : ICommentRepository
         {
             CreatedAt = DateTime.UtcNow,
             Text = "Dummy Text",
-            UserId = 1,
+            UserId = 2,
             PostId = 1
         };
-        comments.Add(dummyComment);
+        Comment dummyComment2 = new()
+        {
+            CreatedAt = DateTime.UtcNow,
+            Text = "Dummy Text2",
+            UserId = 2,
+            PostId = 1
+        };
+        Comment dummyComment3 = new()
+        {
+            CreatedAt = DateTime.UtcNow,
+            Text = "Dummy Text",
+            UserId = 1,
+            PostId = 2
+        };
+        AddAsync(dummyComment);
+        AddAsync(dummyComment2);
+        AddAsync(dummyComment3);
     }
 }

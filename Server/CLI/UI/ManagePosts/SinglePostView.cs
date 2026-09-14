@@ -17,12 +17,12 @@ public class SinglePostView(
             var post = postService.GetSinglePost(postId).Result;
             Console.WriteLine($"--{post.Title}--");
             Console.WriteLine(post.Body);
-            Console.WriteLine($"Created at: {post.CreatedAt}, Karma: {post.UserId}");
+            Console.WriteLine($"Created at: {post.CreatedAt}");
             await ShowComments();
             Console.WriteLine(
                 "Options: Return to posts(back), Like post (like), dislike post (dislike)");
             var userInput = Console.ReadLine();
-            switch (userInput)
+            switch (userInput?.ToLower())
             {
                 case "back":
                     keepGoing = false;
@@ -30,7 +30,7 @@ public class SinglePostView(
                 case "like":
                     await VoteOnPost(1, 1);
                     break;
-                case "Dislike":
+                case "dislike":
                     await VoteOnPost(1, -1);
                     break;
             }

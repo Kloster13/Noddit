@@ -59,6 +59,22 @@ public class VoteInMemoryRepository : IVoteRepository
         return Task.FromResult(voteToFind);
     }
 
+    public Task<Vote?> GetSingleByUserCommentPostAsync(int userId, int? postId,
+        int? commentId)
+    {
+        Vote? voteToFind;
+        if (postId is null == commentId is null)
+            throw new ArgumentException(
+                "Exactly one of PostId or CommentId must be set");
+        if (postId is not null)
+            voteToFind = votes.SingleOrDefault(v =>
+                v.UserId == userId && v.PostId == postId);
+        else
+            voteToFind = votes.SingleOrDefault(v =>
+                v.UserId == userId && v.CommentId == commentId);
+        return Task.FromResult(voteToFind);
+    }
+
     public IQueryable<Vote> GetManyAsync()
     {
         return votes.AsQueryable();

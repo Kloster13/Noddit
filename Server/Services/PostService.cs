@@ -58,7 +58,7 @@ public class PostService
             CreatedAt = DateTime.Now
         };
         var addedPost = await postRepo.AddAsync(post);
-        Vote(userId, 1, addedPost.Id, null);
+        await Vote(userId, 1, addedPost.Id, null);
         var postDto = new PostDto(post.Id, addedPost.UserId, addedPost.Title,
             addedPost.Body,
             addedPost.CreatedAt, 1);
@@ -79,15 +79,27 @@ public class PostService
         if (postId is null == commentId is null)
             throw new ArgumentException(
                 "Exactly one of PostId or CommentId must be set");
-        var vote = new Vote
+        var vote =
+            await voteRepo.GetSingleByUserCommentPostAsync(userId, postId,
+                commentId);
+        if (vote is null)
         {
-            UserId = userId,
-            PostId = postId,
-            CommentId = commentId,
-            Score = score,
-            CreatedAt = DateTime.Now
-        };
-        await voteRepo.AddAsync(vote);
+            vote = new Vote
+            {
+                UserId = userId,
+                PostId = postId,
+                CommentId = commentId,
+                Score = score,
+                CreatedAt = DateTime.Now
+            };
+            await voteRepo.AddAsync(vote);
+        }
+        else
+        {
+            vote.Score = score;
+            vote.CreatedAt = DateTime.Now;
+            await voteRepo.UpdateAsync(vote);
+        }
     }
 
     private string GetCreatedBy(int userId)

@@ -8,5 +8,9 @@ public interface IVoteRepository
     Task UpdateAsync(Vote vote);
     Task DeleteAsync(int id);
     Task<Vote> GetSingleAsync(int id);
+
+    Task<Vote?> GetSingleByUserCommentPostAsync(int userId, int? postId,
+        int? commentId);
+
     IQueryable<Vote> GetManyAsync();
 }

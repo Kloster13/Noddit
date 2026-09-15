@@ -20,7 +20,7 @@ public class SinglePostView(
             Console.WriteLine($"Created at: {post.CreatedAt}");
             await ShowComments();
             Console.WriteLine(
-                "Options: Return to posts(back), Like post (like), dislike post (dislike)");
+                "Options: Return to posts(back), Like post (like), dislike post (dislike), Comment on post (comment)");
             var userInput = Console.ReadLine();
             switch (userInput?.ToLower())
             {
@@ -32,6 +32,9 @@ public class SinglePostView(
                     break;
                 case "dislike":
                     await VoteOnPost(1, -1);
+                    break;
+                case "comment":
+                    await CreateNewComment(postId, 1);
                     break;
             }
         }
@@ -56,5 +59,25 @@ public class SinglePostView(
     private async Task VoteOnPost(int userId, int score)
     {
         await postService.Vote(userId, score, postId, null);
+    }
+
+    private async Task CreateNewComment(int postId, int userId)
+    {
+        while (true)
+        {
+            Console.WriteLine("------------ New Comment ------------");
+            Console.WriteLine("Enter Text");
+            var textInput = Console.ReadLine();
+            try
+            {
+                await postService.CreateComment(postId, userId, textInput);
+                Console.WriteLine("Comment created succesfully");
+                break;
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
     }
 }

@@ -69,22 +69,22 @@ public class PostInMemoryRepository : IPostRepository
         Post dummyPost = new()
         {
             CreatedAt = DateTime.UtcNow,
-            Title = "Dummy Title",
-            Body = "Dummy Body",
+            Title = "Post Title",
+            Body = "Post Body",
             UserId = 1
         };
         Post dummyPost2 = new()
         {
             CreatedAt = DateTime.UtcNow,
-            Title = "Dummy Title2",
-            Body = "Dummy Body2",
+            Title = "Post Title2",
+            Body = "Post Body2",
             UserId = 1
         };
         Post dummyPost3 = new()
         {
             CreatedAt = DateTime.UtcNow,
-            Title = "Dummy Title3",
-            Body = "Dummy Body3",
+            Title = "Post Title3",
+            Body = "Post Body3",
             UserId = 2
         };
         AddAsync(dummyPost);

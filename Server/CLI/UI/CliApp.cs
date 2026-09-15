@@ -15,7 +15,7 @@ public class CliApp
     public CliApp(UserService userService, PostService postService)
     {
         usersView = new ManageUsersView(this,userService);
-        postsView = new ManagePostsView(this, postService, userService);
+        postsView = new ManagePostsView(this, postService);
     }
 
     public void Close()

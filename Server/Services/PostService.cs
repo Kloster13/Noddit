@@ -45,10 +45,10 @@ public class PostService
     public async Task<PostDto> CreatePost(string? title, string? body,
         int userId)
     {
-        if (title is null or "")
-            throw new Exception("No title");
-        if (body is null or "")
-            throw new Exception("No body");
+        if (string.IsNullOrWhiteSpace(title))
+            throw new ArgumentException("Title must be filled out");
+        if (string.IsNullOrWhiteSpace(body))
+            throw new ArgumentException("Body must be filled out");
 
         var post = new Post
         {
@@ -100,6 +100,21 @@ public class PostService
             vote.CreatedAt = DateTime.Now;
             await voteRepo.UpdateAsync(vote);
         }
+    }
+    public async Task<Comment> CreateComment(int postId, int userId, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            throw new ArgumentException("Text must be filled out");
+        var commentToAdd = new Comment
+        {
+            UserId = userId,
+            PostId = postId,
+            Text = text,
+            CreatedAt = DateTime.Now,
+        };
+        var addedComment = await commentRepo.AddAsync(commentToAdd);
+        await Vote(userId, 1, null, addedComment.Id);
+        return addedComment;
     }
 
     private string GetCreatedBy(int userId)

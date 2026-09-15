@@ -69,21 +69,21 @@ public class CommentInMemoryRepository : ICommentRepository
         Comment dummyComment = new()
         {
             CreatedAt = DateTime.UtcNow,
-            Text = "Dummy Text",
+            Text = "Comment Text",
             UserId = 2,
             PostId = 1
         };
         Comment dummyComment2 = new()
         {
             CreatedAt = DateTime.UtcNow,
-            Text = "Dummy Text2",
+            Text = "Comment Text2",
             UserId = 2,
             PostId = 1
         };
         Comment dummyComment3 = new()
         {
             CreatedAt = DateTime.UtcNow,
-            Text = "Dummy Text",
+            Text = "Comment Text",
             UserId = 1,
             PostId = 2
         };

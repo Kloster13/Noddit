@@ -6,8 +6,7 @@ namespace CLI.UI.ManagePosts;
 
 public class ManagePostsView(
     CliApp cliApp,
-    PostService postService,
-    UserService userService)
+    PostService postService)
 {
     public async Task MainView()
     {

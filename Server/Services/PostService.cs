@@ -59,7 +59,9 @@ public class PostService
         };
         var addedPost = await postRepo.AddAsync(post);
         await Vote(userId, 1, addedPost.Id, null);
-        var postDto = new PostDto(post.Id, addedPost.UserId, addedPost.Title,
+        var postDto = new PostDto(post.Id,
+            addedPost.UserId,
+            addedPost.Title,
             addedPost.Body,
             addedPost.CreatedAt, 1);
         return postDto;
@@ -70,8 +72,7 @@ public class PostService
         var comments =
             commentRepo.GetManyAsync().Where(c => c.PostId == postId).ToList();
         return comments.Select(c =>
-            new CommentDto(c.Id, c.Text, CountCommentVotes(c),
-                GetCreatedBy(c.UserId))).ToList();
+            new CommentDto(c.Id, c.Text, CountCommentVotes(c), GetCreatedBy(c.UserId))).ToList();
     }
 
     public async Task Vote(int userId, int score, int? postId, int? commentId)
@@ -116,6 +117,18 @@ public class PostService
         await Vote(userId, 1, null, addedComment.Id);
         return addedComment;
     }
+
+    public async Task DeletePost(int postId)
+    {
+        var post = postRepo.GetSingleAsync(postId);
+        List<Comment> commentsToDelete = commentRepo.GetManyAsync().Where(c => c.PostId == postId).ToList();
+        foreach (var comment in commentsToDelete)
+        {
+            await commentRepo.DeleteAsync(comment.Id);
+        }
+        await postRepo.DeleteAsync(postId);
+    }
+
 
     private string GetCreatedBy(int userId)
     {

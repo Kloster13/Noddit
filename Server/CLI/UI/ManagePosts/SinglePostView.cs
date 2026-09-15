@@ -20,7 +20,7 @@ public class SinglePostView(
             Console.WriteLine($"Created at: {post.CreatedAt}");
             await ShowComments();
             Console.WriteLine(
-                "Options: Return to posts(back), Like post (like), dislike post (dislike), Comment on post (comment)");
+                "Options: Return to posts(back), Like post (like), dislike post (dislike), Comment on post (comment), Delete this post (delete)");
             var userInput = Console.ReadLine();
             switch (userInput?.ToLower())
             {
@@ -35,6 +35,12 @@ public class SinglePostView(
                     break;
                 case "comment":
                     await CreateNewComment(postId, 1);
+                    break;
+                case "delete":
+                    await DeletePost(postId);
+                    break;
+                default:
+                    Console.WriteLine("Command not valid");
                     break;
             }
         }
@@ -78,6 +84,29 @@ public class SinglePostView(
             {
                 Console.WriteLine(e.Message);
             }
+        }
+    }
+
+    private async Task DeletePost(int postId)
+    {
+        while (true)
+        {
+            Console.WriteLine("Are you sure you want to delete this post? (y) or (n)");
+            var userInput = Console.ReadLine();
+            if (userInput is not null && userInput.Equals("y"))
+            {
+                try
+                {
+                    await postService.DeletePost(postId);
+                    Console.WriteLine("Post deleted succesfully!");
+                    await postsView.MainView();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            else break;
         }
     }
 }

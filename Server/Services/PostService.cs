@@ -69,10 +69,9 @@ public class PostService
 
     public async Task<List<CommentDto>> GetAllComments(int postId)
     {
-        var comments =
-            commentRepo.GetManyAsync().Where(c => c.PostId == postId).ToList();
-        return comments.Select(c =>
-            new CommentDto(c.Id, c.Text, CountCommentVotes(c), GetCreatedBy(c.UserId))).ToList();
+        return
+            commentRepo.GetManyAsync().Where(c => c.PostId == postId).Select(c =>
+                new CommentDto(c.Id, c.Text, CountCommentVotes(c), GetCreatedBy(c.UserId))).ToList();
     }
 
     public async Task Vote(int userId, int score, int? postId, int? commentId)
@@ -102,6 +101,7 @@ public class PostService
             await voteRepo.UpdateAsync(vote);
         }
     }
+
     public async Task<Comment> CreateComment(int postId, int userId, string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -126,6 +126,7 @@ public class PostService
         {
             await commentRepo.DeleteAsync(comment.Id);
         }
+
         await postRepo.DeleteAsync(postId);
     }
 

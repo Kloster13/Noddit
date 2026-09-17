@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Entities;
 using RepositoryContracts;
 
@@ -10,7 +6,7 @@ namespace FileRepositories
 {
     public class UserFileRepository : IUserRepository
     {
-        private readonly string filePath = "data/users.json";
+        private readonly string filePath = "users.json";
 
         public UserFileRepository()
         {

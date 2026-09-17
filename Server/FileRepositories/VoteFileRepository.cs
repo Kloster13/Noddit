@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Entities;
 using RepositoryContracts;
 
@@ -10,7 +6,7 @@ namespace FileRepositories
 {
     public class VoteFileRepository : IVoteRepository
     {
-        private readonly string filePath = "data/votes.json";
+        private readonly string filePath = "votes.json";
 
         public VoteFileRepository()
         {

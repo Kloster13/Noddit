@@ -1,6 +1,6 @@
-﻿using Entities;
+﻿using DTOs;
+using Entities;
 using RepositoryContracts;
-using Services.DTOs;
 
 namespace Services;
 

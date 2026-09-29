@@ -1,6 +1,6 @@
-﻿using Entities;
+﻿using DTOs;
+using Entities;
 using RepositoryContracts;
-using Services.DTOs;
 
 namespace Services;
 
@@ -67,11 +67,11 @@ public class PostService
         return postDto;
     }
 
-    public async Task<List<CommentDto>> GetAllComments(int postId)
+    public async Task<List<CommentResponseDto>> GetAllComments(int postId)
     {
         return
             commentRepo.GetManyAsync().Where(c => c.PostId == postId).Select(c =>
-                new CommentDto(c.Id, c.Text, CountCommentVotes(c), GetCreatedBy(c.UserId))).ToList();
+                new CommentResponseDto(c.Id, c.Text, CountCommentVotes(c), GetCreatedBy(c.UserId))).ToList();
     }
 
     public async Task Vote(int userId, int score, int? postId, int? commentId)

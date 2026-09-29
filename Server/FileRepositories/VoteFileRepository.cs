@@ -6,7 +6,7 @@ namespace FileRepositories
 {
     public class VoteFileRepository : IVoteRepository
     {
-        private readonly string filePath = "votes.json";
+        private readonly string filePath = "data/votes.json";
 
         public VoteFileRepository()
         {
@@ -26,7 +26,7 @@ namespace FileRepositories
         public async Task DeleteAsync(int id)
         {
             List<Vote> votes = await ReadVotesFromFile();
-            Vote? voteToRemove = votes.SingleOrDefault(v => v.Id == id) ?? throw new InvalidOperationException(
+            Vote? voteToRemove = votes.SingleOrDefault(v => v.Id == id) ?? throw new NotFoundException(
                     $"Vote with ID '{id}' not found");
             votes.Remove(voteToRemove);
             await WriteVotesToFile(votes);
@@ -41,7 +41,7 @@ namespace FileRepositories
         public async Task<Vote> GetSingleAsync(int id)
         {
             List<Vote> votes = await ReadVotesFromFile();
-            return votes.SingleOrDefault(v => v.Id == id) ?? throw new InvalidOperationException($"Vote with ID '{id}' not found");
+            return votes.SingleOrDefault(v => v.Id == id) ?? throw new NotFoundException($"Vote with ID '{id}' not found");
         }
 
         public async Task<Vote?> GetSingleByUserCommentPostAsync(int userId, int? postId, int? commentId)
@@ -58,7 +58,7 @@ namespace FileRepositories
         public async Task UpdateAsync(Vote vote)
         {
             List<Vote> votes = await ReadVotesFromFile();
-            Vote? existingVote = votes.SingleOrDefault(v => v.Id == vote.Id) ?? throw new InvalidOperationException(
+            Vote? existingVote = votes.SingleOrDefault(v => v.Id == vote.Id) ?? throw new NotFoundException(
                     $"Vote with ID '{vote.Id}' not found");
             votes.Remove(existingVote);
             votes.Add(vote);

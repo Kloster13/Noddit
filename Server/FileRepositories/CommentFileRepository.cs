@@ -6,7 +6,7 @@ namespace FileRepositories
 {
     public class CommentFileRepository : ICommentRepository
     {
-        private readonly string filePath = "comments.json";
+        private readonly string filePath = "data/comments.json";
 
         public CommentFileRepository()
         {
@@ -26,7 +26,7 @@ namespace FileRepositories
         public async Task DeleteAsync(int id)
         {
             List<Comment> comments = await ReadCommentsFromFile();
-            Comment? commentToRemove = comments.SingleOrDefault(c => c.Id == id) ?? throw new InvalidOperationException(
+            Comment? commentToRemove = comments.SingleOrDefault(c => c.Id == id) ?? throw new NotFoundException(
                     $"Comment with ID '{id}' not found");
             comments.Remove(commentToRemove);
             await WriteCommentsToFile(comments);
@@ -41,13 +41,13 @@ namespace FileRepositories
         public async Task<Comment> GetSingleAsync(int id)
         {
             List<Comment> comments = await ReadCommentsFromFile();
-            return comments.SingleOrDefault(c => c.Id == id) ?? throw new InvalidOperationException($"Comment with ID '{id}' not found");
+            return comments.SingleOrDefault(c => c.Id == id) ?? throw new NotFoundException($"Comment with ID '{id}' not found");
         }
 
         public async Task UpdateAsync(Comment comment)
         {
             List<Comment> comments = await ReadCommentsFromFile();
-            Comment? existingComment = comments.SingleOrDefault(c => c.Id == comment.Id) ?? throw new InvalidOperationException(
+            Comment? existingComment = comments.SingleOrDefault(c => c.Id == comment.Id) ?? throw new NotFoundException(
                     $"Comment with ID '{comment.Id}' not found");
             comments.Remove(existingComment);
             comments.Add(comment);

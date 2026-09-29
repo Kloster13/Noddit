@@ -6,7 +6,7 @@ namespace FileRepositories
 {
     public class PostFileRepository : IPostRepository
     {
-        private readonly string filePath = "posts.json";
+        private readonly string filePath = "data/posts.json";
 
         public PostFileRepository()
         {
@@ -26,7 +26,7 @@ namespace FileRepositories
         public async Task DeleteAsync(int id)
         {
             List<Post> posts = await ReadPostsFromFile();
-            Post? postToRemove = posts.SingleOrDefault(p => p.Id == id) ?? throw new InvalidOperationException(
+            Post? postToRemove = posts.SingleOrDefault(p => p.Id == id) ?? throw new NotFoundException(
                     $"Post with ID '{id}' not found");
             posts.Remove(postToRemove);
             await WritePostsToFile(posts);
@@ -41,13 +41,13 @@ namespace FileRepositories
         public async Task<Post> GetSingleAsync(int id)
         {
             List<Post> posts = await ReadPostsFromFile();
-            return posts.SingleOrDefault(p => p.Id == id) ?? throw new InvalidOperationException($"Post with ID '{id}' not found");
+            return posts.SingleOrDefault(p => p.Id == id) ?? throw new NotFoundException($"Post with ID '{id}' not found");
         }
 
         public async Task UpdateAsync(Post post)
         {
             List<Post> posts = await ReadPostsFromFile();
-            Post? existingPost = posts.SingleOrDefault(p => p.Id == post.Id) ?? throw new InvalidOperationException(
+            Post? existingPost = posts.SingleOrDefault(p => p.Id == post.Id) ?? throw new NotFoundException(
                     $"Post with ID '{post.Id}' not found");
             posts.Remove(existingPost);
             posts.Add(post);

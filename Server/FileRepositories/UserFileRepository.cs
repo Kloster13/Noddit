@@ -6,7 +6,7 @@ namespace FileRepositories
 {
     public class UserFileRepository : IUserRepository
     {
-        private readonly string filePath = "users.json";
+        private readonly string filePath = "data/users.json";
 
         public UserFileRepository()
         {
@@ -26,7 +26,7 @@ namespace FileRepositories
         public async Task DeleteAsync(int id)
         {
             List<User> users = await ReadUsersFromFile();
-            User? userToRemove = users.SingleOrDefault(u => u.Id == id) ?? throw new InvalidOperationException(
+            User? userToRemove = users.SingleOrDefault(u => u.Id == id) ?? throw new NotFoundException(
                     $"User with ID '{id}' not found");
             users.Remove(userToRemove);
             await WriteUsersToFile(users);
@@ -41,13 +41,13 @@ namespace FileRepositories
         public async Task<User> GetSingleAsync(int id)
         {
             List<User> users = await ReadUsersFromFile();
-            return users.SingleOrDefault(u => u.Id == id) ?? throw new InvalidOperationException($"User with ID '{id}' not found");
+            return users.SingleOrDefault(u => u.Id == id) ?? throw new NotFoundException($"User with ID '{id}' not found");
         }
 
         public async Task UpdateAsync(User user)
         {
             List<User> users = await ReadUsersFromFile();
-            User? existingUser = users.SingleOrDefault(u => u.Id == user.Id) ?? throw new InvalidOperationException(
+            User? existingUser = users.SingleOrDefault(u => u.Id == user.Id) ?? throw new NotFoundException(
                     $"User with ID '{user.Id}' not found");
             users.Remove(existingUser);
             users.Add(user);

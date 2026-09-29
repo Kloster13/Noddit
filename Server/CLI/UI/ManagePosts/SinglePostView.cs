@@ -1,6 +1,5 @@
 ﻿using Entities;
 using Services;
-using Services.DTOs;
 
 namespace CLI.UI.ManagePosts;
 

@@ -1,4 +1,5 @@
 ﻿using CLI.UI.ManagePosts;
+using DTOs;
 using Services;
 
 namespace CLI.UI.ManageUsers;
@@ -43,9 +44,9 @@ public class ManageUsersView(CliApp cliApp, UserService userService)
             var inputPassword = Console.ReadLine();
             try
             {
+              var toCreate = new CreateUserRequest(inputUsername, inputPassword);
                 var createdUser =
-                    await userService.CreateNewUser(inputUsername,
-                        inputPassword);
+                    await userService.CreateNewUser(toCreate);
                 Console.WriteLine($"User: {createdUser.Username} was created");
                 break;
             }

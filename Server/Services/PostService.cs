@@ -29,7 +29,7 @@ public class PostService
         foreach (var post in posts)
         {
             var votes = CountPostVotes(post);
-            var postDto = new PostDto(post.Id, post.UserId, post.Title,
+            var postDto = new PostDto(post.Id, GetCreatedBy(post.UserId), post.Title,
                 post.Body, post.CreatedAt, votes);
             resultList.Add(postDto);
         }
@@ -60,7 +60,7 @@ public class PostService
         var addedPost = await postRepo.AddAsync(post);
         await Vote(userId, 1, addedPost.Id, null);
         var postDto = new PostDto(post.Id,
-            addedPost.UserId,
+            GetCreatedBy(userId),
             addedPost.Title,
             addedPost.Body,
             addedPost.CreatedAt, 1);

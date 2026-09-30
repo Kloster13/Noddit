@@ -10,16 +10,16 @@ public class UserService(
     IPostRepository postRepo,
     ICommentRepository commentRepo)
 {
-    public async Task<UserDto> CreateNewUser(string? username, string? password)
+    public async Task<UserDto> CreateNewUser(CreateUserRequest request)
     {
-        if (string.IsNullOrWhiteSpace(username))
+        if (string.IsNullOrWhiteSpace(request.Username))
             throw new ArgumentException("Username must be filled out");
-        if (string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(request.Password))
             throw new ArgumentException("Password must be filled out");
         var userToCreate = new User
         {
-            Username = username,
-            Password = password
+            Username = request.Username,
+            Password = request.Password,
         };
         var createdUser = await userRepo.AddAsync(userToCreate);
         return new UserDto(createdUser.Id, createdUser.Username,
@@ -30,6 +30,32 @@ public class UserService(
     {
         var users = userRepo.GetManyAsync().ToList();
         return users.Select(user => new UserDto(user.Id, user.Username, user.Password, CalculateUserKarma(user.Id))).ToList();
+    }
+
+    public async Task<UserDto> GetSingleUser(int userId)
+    {
+      var userToGet = await userRepo.GetSingleAsync(userId);
+      return new UserDto(userId, userToGet.Username, userToGet.Password, CalculateUserKarma(userId));
+    }
+
+    public async Task DeleteUser(int userId)
+    {
+      await userRepo.DeleteAsync(userId);
+    }
+
+    public async Task<UserDto> UpdateUser(int userId, UpdateUserRequest request)
+    {
+      if (string.IsNullOrWhiteSpace(request.Username))
+            throw new ArgumentException("Username must be filled out");
+      if (string.IsNullOrWhiteSpace(request.Password))
+        throw new ArgumentException("Password must be filled out");
+      
+      var userToUpdate = await userRepo.GetSingleAsync(userId);
+      userToUpdate.Username = request.Username;
+      userToUpdate.Password = request.Password;
+      await userRepo.UpdateAsync(userToUpdate);
+      
+      return new UserDto(userId, userToUpdate.Username, userToUpdate.Password, CalculateUserKarma(userId));
     }
 
     private int CalculateUserKarma(int userId)

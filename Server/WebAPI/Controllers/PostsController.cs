@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using DTOs;
+using Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -13,5 +15,12 @@ public class PostsController(PostService postService) : ControllerBase
   {
     var toReturn = await postService.GetSinglePost(id);
     return Results.Ok(toReturn);
+  }
+
+  [HttpGet]
+  public async Task<ActionResult> GetPosts()
+  {
+    var toReturn = postService.GetAllPosts();
+    return Ok(toReturn);
   }
 }

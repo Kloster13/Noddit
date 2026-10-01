@@ -1,6 +1,4 @@
 ﻿using DTOs;
-using Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -22,5 +20,19 @@ public class PostsController(PostService postService) : ControllerBase
   {
     var toReturn = postService.GetAllPosts();
     return Ok(toReturn);
+  }
+
+  [HttpPost]
+  public async Task<IResult> CreatePost(CreatePostRequest request)
+  {
+    var toReturn = await postService.CreatePost(request);
+    return Results.Ok(toReturn);
+  }
+
+  [HttpPut("{id:int}")]
+  public async Task<IResult> UpdatePost([FromRoute]int id, UpdatePostRequest request)
+  {
+    var toReturn = await postService.UpdatePost(id, request);
+    return Results.Ok(toReturn);
   }
 }

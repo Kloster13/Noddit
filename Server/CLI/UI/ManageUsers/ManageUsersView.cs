@@ -1,5 +1,6 @@
 ﻿using CLI.UI.ManagePosts;
 using DTOs;
+using DTOs.User;
 using Services;
 
 namespace CLI.UI.ManageUsers;

@@ -10,6 +10,7 @@ namespace FileRepositories
 
         public UserFileRepository()
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
             if (!File.Exists(filePath))
                 File.WriteAllText(filePath, "[]");
         }

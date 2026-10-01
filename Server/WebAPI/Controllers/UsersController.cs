@@ -1,4 +1,5 @@
 ﻿using DTOs;
+using DTOs.User;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -23,16 +24,16 @@ public class UsersController(UserService userService) : ControllerBase
   }
 
   [HttpPost]
-  public async Task<UserDto> CreateUser([FromBody] CreateUserRequest request)
+  public async Task<IResult> CreateUser([FromBody] CreateUserRequest request)
   {
     var toReturn = await userService.CreateNewUser(request);
-    return toReturn;
+    return Results.Created($"/api/users/{toReturn.Id}", toReturn);
   }
 
   [HttpPut("{id:int}")]
-  async Task<UserDto> UpdateUser([FromRoute] int id, [FromBody] UpdateUserRequest request)
+  public async Task<IResult> UpdateUser([FromRoute] int id, [FromBody] UpdateUserRequest request)
   {
     var toUpdate= await userService.UpdateUser(id, request);
-    return toUpdate;
+    return Results.Ok(toUpdate);
   }
 }

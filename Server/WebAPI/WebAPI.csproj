@@ -18,10 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="data\comments.json" />
-      <None Include="data\posts.json" />
-      <None Include="data\users.json" />
-      <None Include="data\votes.json" />
+      <Folder Include="data\" />
     </ItemGroup>
 
 </Project>

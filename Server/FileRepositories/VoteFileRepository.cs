@@ -10,6 +10,7 @@ namespace FileRepositories
 
         public VoteFileRepository()
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
             if (!File.Exists(filePath))
                 File.WriteAllText(filePath, "[]");
         }

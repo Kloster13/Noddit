@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using DTOs.Comment;
+using Entities;
 using Services;
 
 namespace CLI.UI.ManagePosts;
@@ -49,7 +50,7 @@ public class SinglePostView(
 
     private async Task ShowComments()
     {
-        var comments = await postService.GetAllComments(postId);
+        var comments = await postService.GetAllCommentsOfPost(postId);
         Console.WriteLine("------------------------------------------");
         foreach (var comment in comments)
         {
@@ -73,9 +74,10 @@ public class SinglePostView(
             Console.WriteLine("------------ New Comment ------------");
             Console.WriteLine("Enter Text");
             var textInput = Console.ReadLine();
+            var request = new CreateCommentRequest(userId, textInput);
             try
             {
-                await postService.CreateComment(postId, userId, textInput);
+                await postService.AddCommentToPost(postId, request);
                 Console.WriteLine("Comment created succesfully");
                 break;
             }

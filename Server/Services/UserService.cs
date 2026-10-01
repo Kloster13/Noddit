@@ -1,4 +1,5 @@
 ﻿using DTOs;
+using DTOs.User;
 using Entities;
 using RepositoryContracts;
 
@@ -16,6 +17,8 @@ public class UserService(
             throw new ArgumentException("Username must be filled out");
         if (string.IsNullOrWhiteSpace(request.Password))
             throw new ArgumentException("Password must be filled out");
+        if (userRepo.GetManyAsync().Any(u => u.Username == request.Username))
+            throw new ArgumentException("Username is already taken");
         var userToCreate = new User
         {
             Username = request.Username,
@@ -23,19 +26,19 @@ public class UserService(
         };
         var createdUser = await userRepo.AddAsync(userToCreate);
         return new UserDto(createdUser.Id, createdUser.Username,
-            createdUser.Password, 0);
+            0);
     }
 
     public List<UserDto> GetAllUsers()
     {
         var users = userRepo.GetManyAsync().ToList();
-        return users.Select(user => new UserDto(user.Id, user.Username, user.Password, CalculateUserKarma(user.Id))).ToList();
+        return users.Select(user => new UserDto(user.Id, user.Username, CalculateUserKarma(user.Id))).ToList();
     }
 
     public async Task<UserDto> GetSingleUser(int userId)
     {
       var userToGet = await userRepo.GetSingleAsync(userId);
-      return new UserDto(userId, userToGet.Username, userToGet.Password, CalculateUserKarma(userId));
+      return new UserDto(userId, userToGet.Username, CalculateUserKarma(userId));
     }
 
     public async Task DeleteUser(int userId)
@@ -55,7 +58,7 @@ public class UserService(
       userToUpdate.Password = request.Password;
       await userRepo.UpdateAsync(userToUpdate);
       
-      return new UserDto(userId, userToUpdate.Username, userToUpdate.Password, CalculateUserKarma(userId));
+      return new UserDto(userId, userToUpdate.Username, CalculateUserKarma(userId));
     }
 
     private int CalculateUserKarma(int userId)

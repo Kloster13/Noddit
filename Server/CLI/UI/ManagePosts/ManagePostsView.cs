@@ -1,4 +1,6 @@
 ﻿using CLI.UI.ManageUsers;
+using DTOs;
+using DTOs.Post;
 using Entities;
 using Services;
 
@@ -74,10 +76,11 @@ public class ManagePostsView(
             var titleInput = Console.ReadLine();
             Console.WriteLine("Enter Text");
             var textInput = Console.ReadLine();
+            var request = new CreatePostRequest(titleInput, textInput, 1);
             try
             {
                 var post =
-                    await postService.CreatePost(titleInput, textInput, 1);
+                    await postService.CreatePost(request);
                 Console.WriteLine($"New post created with title: {post.Title}");
                 break;
             }

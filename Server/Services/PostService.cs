@@ -1,4 +1,6 @@
 ﻿using DTOs;
+using DTOs.Comment;
+using DTOs.Post;
 using Entities;
 using RepositoryContracts;
 
@@ -37,9 +39,11 @@ public class PostService
         return resultList;
     }
 
-    public async Task<Post> GetSinglePost(int postId)
+    public async Task<PostDto> GetSinglePost(int postId)
     {
-        return await postRepo.GetSingleAsync(postId);
+        var post = await postRepo.GetSingleAsync(postId);
+        return new PostDto(post.Id, GetCreatedBy(post.UserId), post.Title,
+            post.Body, post.CreatedAt, CountPostVotes(post));
     }
 
     public async Task<PostDto> CreatePost(CreatePostRequest request)
@@ -58,7 +62,7 @@ public class PostService
         };
         var addedPost = await postRepo.AddAsync(post);
         await Vote(request.UserId, 1, addedPost.Id, null);
-        var postDto = new PostDto(post.Id,
+        var postDto = new PostDto(addedPost.Id,
             GetCreatedBy(request.UserId),
             addedPost.Title,
             addedPost.Body,
@@ -68,8 +72,17 @@ public class PostService
 
     public async Task DeletePost(int postId)
     {
-        var post = postRepo.GetSingleAsync(postId);
-        List<Comment> commentsToDelete = commentRepo.GetManyAsync().Where(c => c.PostId == postId).ToList();
+        await postRepo.GetSingleAsync(postId);
+        var commentsToDelete = commentRepo.GetManyAsync().Where(c => c.PostId == postId).ToList();
+        var votesToDelete = voteRepo.GetManyAsync()
+            .Where(v => v.PostId == postId ||
+                        (v.CommentId.HasValue && commentsToDelete.Any(c => c.Id == v.CommentId.Value)))
+            .ToList();
+        foreach (var vote in votesToDelete)
+        {
+            await voteRepo.DeleteAsync(vote.Id);
+        }
+
         foreach (var comment in commentsToDelete)
         {
             await commentRepo.DeleteAsync(comment.Id);
@@ -93,31 +106,32 @@ public class PostService
             GetCreatedBy(postToUpdate.UserId),
             postToUpdate.Title,
             postToUpdate.Body,
-            postToUpdate.CreatedAt, 1);
+            postToUpdate.CreatedAt, CountPostVotes(postToUpdate));
         return postDto;
     }
 
-    public async Task<List<CommentResponseDto>> GetAllComments(int postId)
+    public Task<List<CommentResponseDto>> GetAllCommentsOfPost(int postId)
     {
-        return
-            commentRepo.GetManyAsync().Where(c => c.PostId == postId).Select(c =>
-                new CommentResponseDto(c.Id, c.Text, CountCommentVotes(c), GetCreatedBy(c.UserId))).ToList();
+        return Task.FromResult(
+            commentRepo.GetManyAsync().Where(c => c.PostId == postId).ToList().Select(c =>
+                new CommentResponseDto(c.Id, c.Text, CountCommentVotes(c), GetCreatedBy(c.UserId))).ToList());
     }
 
-    public async Task<Comment> CreateComment(int postId, int userId, string? text)
+    public async Task<CommentResponseDto> AddCommentToPost(int postId, CreateCommentRequest request)
     {
-        if (string.IsNullOrWhiteSpace(text))
+        if (string.IsNullOrWhiteSpace(request.Text))
             throw new ArgumentException("Text must be filled out");
         var commentToAdd = new Comment
         {
-            UserId = userId,
+            UserId = request.UserId,
             PostId = postId,
-            Text = text,
+            Text = request.Text,
             CreatedAt = DateTime.Now,
         };
         var addedComment = await commentRepo.AddAsync(commentToAdd);
-        await Vote(userId, 1, null, addedComment.Id);
-        return addedComment;
+        await Vote(request.UserId, 1, null, addedComment.Id);
+        return new CommentResponseDto(addedComment.Id, addedComment.Text, 1,
+            GetCreatedBy(addedComment.UserId));
     }
 
     public async Task Vote(int userId, int score, int? postId, int? commentId)
